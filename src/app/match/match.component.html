@@ -1,8 +1,12 @@
-<br>
-<br>
-<br>
-<ul>
-    <li *ngFor="let resultObj of matchResult">
-        <div> <br> {{ resultObj.userMail }} <br> {{ resultObj.username }} <br> <p>Udd Bild oder was auch immer </p></div>
-    </li>
-</ul>
+<div class="content" role="main">
+    <!-- Swipe Window -->
+    <div class="swipebox" >
+
+        <!-- [ngStyle]="{'display':'none'}" -->
+        <div style="height: 100%; width: 100%;">
+            <app-profile-view *ngFor="let match of matchResult" [currentUser]="match"></app-profile-view>
+        </div>
+    
+        </div>
+    
+</div>

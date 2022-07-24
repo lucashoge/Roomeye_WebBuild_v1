@@ -14,9 +14,10 @@ export class RegisterComponent implements OnInit {
   constructor(private http: HttpClient, private router: Router) { }
 
   ngOnInit(): void {
+    sessionStorage.removeItem("tokenErrorMessage");
   }
 
-  showPerson:boolean=true;
+  showPerson:boolean=false;
   showWG:boolean=false;
 
   users: any;

@@ -10,13 +10,15 @@ import { Router } from "@angular/router";
 })
 export class LoginComponent implements OnInit {
 
-  constructor(private auth: AuthService, private http: HttpClient, private router: Router) { }
+  constructor(private auth: AuthService, private http: HttpClient, private router: Router ) { }
 
   ngOnInit(): void {
   }
+  
 
 
   loginMessage: any;
+  tokenErrorMessage: any=sessionStorage.getItem('tokenErrorMessage');
   kindOfUser: any;
 
   loginUser(event: any) {
@@ -94,5 +96,14 @@ export class LoginComponent implements OnInit {
       console.log(JSON.stringify(resultArray[0]));
     });
   }
+
+  openReg() {
+    this.router.navigate(['/register']);
+
+  }
+
+  /* clearSessionStorage(){
+    sessionStorage.removeItem("tokenErrorMessage");
+  } */
 
 }
