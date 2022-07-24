@@ -10,7 +10,6 @@ import { FormsModule } from "@angular/forms";
 import { RegisterComponent } from './register/register.component';
 
 import { MainUiComponent } from './main-ui/main-ui.component';
-import { ProfileBoxComponent } from './profile-box/profile-box.component';
 import { ChatComponent } from './chat/chat.component';
 import { MatchComponent } from './match/match.component';
 import { SettingsEditingComponent } from './settings-editing/settings-editing.component';
@@ -24,19 +23,20 @@ import { AuthGuard } from './auth.guard.guard';
 import { DatePipe } from '@angular/common';
 import {MatSliderModule,} from '@angular/material/slider'; 
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import { ProfileViewComponent } from './profile-view/profile-view.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     RegisterComponent,
      MainUiComponent,
-     ProfileBoxComponent,
      ChatComponent,
      MatchComponent,
      SettingsEditingComponent,
      LoginComponent,
      ProfileComponent,
-     ChatverlaeufeComponent
+     ChatverlaeufeComponent,
+     ProfileViewComponent
   ],
   imports: [
     BrowserModule,
@@ -57,11 +57,6 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
       },{
         path: 'mainUI',
         component: MainUiComponent,
-        canActivate: [AuthGuard]
-      },
-      {
-        path: 'profileBox',
-        component: ProfileBoxComponent,
         canActivate: [AuthGuard]
       },
       {

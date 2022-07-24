@@ -1,11 +1,12 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { trigger, keyframes, animate, transition } from "@angular/animations";
 import * as kf from './keyframes';
 import {User} from './user';
 import data from './users.json';
 import { Subject, Observable } from 'rxjs';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Router } from "@angular/router";
+import { HandleTokenErrorService } from '../handle-token-error.service';
 
 @Component({
   selector: 'app-profile',
@@ -31,10 +32,15 @@ export class ProfileComponent {
   @Input()
   parentSubject!: Subject<any>;
 
+  @Output() 
+  matchFound = new EventEmitter<{ match: boolean }>();
+
+  noMoreProfilesToBrowse: boolean = false;
+
   
   animationState!: string;
 
-  constructor(private http: HttpClient, private router: Router) {
+  constructor(private http: HttpClient, private router: Router, private handleToken: HandleTokenErrorService) {
    }
 
   ngOnInit() {
@@ -50,10 +56,32 @@ export class ProfileComponent {
   }
 
   startAnimation(state: any) {
+    console.log(state)
     if (!this.animationState) {
       this.animationState = state;
     }
+
     
+    if(state=="swiperight"){
+
+      this.http.post<any>("submitMatch", { body: {idToMatch: this.currentUser.userid, usertype: this.loggedInUser.usertype, matchValue: 1} }).subscribe((result) => {
+        console.log(result);
+        this.matchFound.emit({ match: result.match });
+      });
+    }else{
+      this.http.post<any>("submitMatch", { body: {idToMatch: this.currentUser.userid, usertype: this.loggedInUser.usertype, matchValue: 0} }).subscribe((result) => {
+        console.log(result);
+        this.matchFound.emit({ match: result.match });
+      },
+      err => {
+        console.log("Error");
+        if (err instanceof HttpErrorResponse) {
+                    if(err.status==401){
+            this.handleToken.handleTokenError();
+          } 
+        }
+      });
+    }  
   }
 
   resetAnimationState(state: any) {
@@ -79,7 +107,7 @@ export class ProfileComponent {
   }
 
   async getNewUsersForMatching() {
-    var httpPostData = {userId: this.userID, userType: this.loggedInUser.usertype, limit: "3"};
+    var httpPostData = {minUserId: this.userID, sendingUser: this.loggedInUser, limit: "3"};
     this.http.post<any>("getUsersFromIdUpwards", { body: httpPostData}).subscribe((result) => {
       
       this.users = result;
@@ -90,15 +118,31 @@ export class ProfileComponent {
         console.log("currentUser from profiles" + this.currentUser)
         console.log(this.currentUser)
         this.userID = this.users[this.users.length-1].userid;
+        if(this.currentUser.profilepic == ''){
+          this.currentUser.profilepic = 'assets/Profilbild_default.jpg'
+        }
         console.log("profilePicture: " + this.currentUser.profilepic)
+      }else{
+        this.noMoreProfilesToBrowse = true;
+        this.currentUser = null;
       }
       
+    },
+    err => {
+      console.log("Error:");
+      console.log(err);
+      if (err instanceof HttpErrorResponse) {
+                  if(err.status==401){
+            this.handleToken.handleTokenError();
+          } 
+      }
     }); 
     
   }
 
 
   ngOnDestroy() {
+    console.log('profile destroy');
     this.parentSubject.unsubscribe();
   }
 

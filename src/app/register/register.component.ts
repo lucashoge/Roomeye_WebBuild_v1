@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Router } from "@angular/router";
 import { mergeNsAndName } from '@angular/compiler';
+import { MatOptionSelectionChange } from '@angular/material/core';
 
 @Component({
   selector: 'app-register',
@@ -14,9 +15,10 @@ export class RegisterComponent implements OnInit {
   constructor(private http: HttpClient, private router: Router) { }
 
   ngOnInit(): void {
+    sessionStorage.removeItem("tokenErrorMessage");
   }
 
-  showPerson:boolean=true;
+  showPerson:boolean=false;
   showWG:boolean=false;
 
   users: any;
@@ -53,6 +55,8 @@ export class RegisterComponent implements OnInit {
     this.kindOfUser = 'wg';
     console.log(this.kindOfUser);
   }
+
+  
   
   
   sendRegister(data: any) {
@@ -71,6 +75,10 @@ export class RegisterComponent implements OnInit {
     else {
       this.passwordError = "";
     }
+    
+
+    
+
 
     //Get abfrage, ob Username und Email vorhanden sind
     this.http.get("register", config).subscribe(result => {
@@ -88,6 +96,7 @@ export class RegisterComponent implements OnInit {
       return;
     });
 
+    
 
 
     //Dann Nachricht, dass Registrierung erfolgreich
@@ -95,6 +104,11 @@ export class RegisterComponent implements OnInit {
 
     //Wenn nicht frei -> Nachricht dass Name/Email bereits vergeben sind
 
+
+  }
+
+  openLog(){
+    this.router.navigate(['/login']);
 
   }
   
